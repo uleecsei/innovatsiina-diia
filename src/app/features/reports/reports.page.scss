@@ -1,0 +1,51 @@
+.report-grid {
+  display: grid;
+  gap: 36px 7%;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.report-card {
+  text-decoration: none;
+}
+
+.report-card::before {
+  background: #e9e9e4;
+  border: 2px solid #bd5264;
+  border-radius: 4px;
+  content: '';
+  display: block;
+  padding-top: 72%;
+}
+
+.report-card span {
+  background: var(--wine);
+  color: #fff;
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  margin-top: -20px;
+  padding: 7px 10px;
+  position: relative;
+}
+
+.report-card h2 {
+  font-size: 1.3rem;
+  margin: 10px 0 5px;
+}
+
+.report-card p {
+  color: #777;
+  margin: 0;
+}
+
+@media (max-width: 800px) {
+  .report-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+}

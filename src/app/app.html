@@ -1,0 +1,33 @@
+<header class="site-header">
+  <a class="brand" routerLink="/" aria-label="Інноваційна дія — головна">
+    <img src="assets/logo.webp" alt="Інноваційна дія" />
+  </a>
+
+  <button
+    class="menu-button"
+    type="button"
+    aria-label="Відкрити меню"
+    [attr.aria-expanded]="menuOpen()"
+    (click)="toggleMenu()"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <nav [class.open]="menuOpen()">
+    <a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">Про нас</a>
+    <a routerLink="/projects" routerLinkActive="active" (click)="closeMenu()">Проєкти</a>
+    <a routerLink="/services" routerLinkActive="active" (click)="closeMenu()">Послуги</a>
+    <a routerLink="/reports" routerLinkActive="active" (click)="closeMenu()">Звітність</a>
+    <a routerLink="/" fragment="contacts" (click)="closeMenu()">Контакти</a>
+  </nav>
+</header>
+
+<router-outlet />
+
+<footer class="site-footer">
+  <img src="assets/logo.webp" alt="" />
+  <p>Громадська організація «Інноваційна дія»</p>
+  <p>© {{ year }}</p>
+</footer>

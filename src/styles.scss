@@ -1,0 +1,87 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+  font-family: 'Trebuchet MS', 'Avenir Next', system-ui, sans-serif;
+  scroll-behavior: smooth;
+}
+
+body {
+  color: #292724;
+  min-width: 320px;
+  margin: 0;
+}
+
+:root {
+  --wine: #b6334d;
+  --red: #d12e43;
+  --orange: #f4a83f;
+  --ink: #292724;
+  --paper: #f7f7f4;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+.section-wide {
+  margin-inline: auto;
+  max-width: 1440px;
+  padding-inline: clamp(22px, 5.5vw, 82px);
+}
+
+.page {
+  min-height: calc(100vh - 212px);
+  padding-block: clamp(55px, 7vw, 100px);
+}
+
+.page > h1,
+.page > .eyebrow {
+  margin-left: 0;
+}
+
+h1,
+h2,
+h3 {
+  overflow-wrap: normal;
+}
+
+p,
+a {
+  overflow-wrap: anywhere;
+}
+
+h1 {
+  font-size: clamp(3rem, 6vw, 5.7rem);
+  line-height: 0.95;
+  margin: 0.15em 0 0.6em;
+}
+
+h2 {
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+}
+
+.eyebrow {
+  color: var(--wine);
+  font-size: 0.83rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+@media (max-width: 800px) {
+  .page {
+    padding-block: 48px;
+  }
+}

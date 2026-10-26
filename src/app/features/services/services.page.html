@@ -1,0 +1,18 @@
+<main class="page section-wide">
+  <p class="eyebrow">Каталог фахівчинь</p>
+  <h1>Послуги</h1>
+
+  <div class="service-list">
+    @for (specialist of specialists; track specialist.email) {
+      <article>
+        <div class="avatar">{{ specialist.name[0] }}</div>
+        <div>
+          <h2>{{ specialist.name }}</h2>
+          <p>{{ specialist.skill }}</p>
+        </div>
+        <a [href]="'mailto:' + specialist.email">{{ specialist.email }}</a>
+        <button class="icon-button" type="button" aria-label="Переглянути портфоліо">▤</button>
+      </article>
+    }
+  </div>
+</main>

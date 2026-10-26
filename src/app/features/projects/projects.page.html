@@ -1,0 +1,17 @@
+<main class="page section-wide">
+  <p class="eyebrow">Наша діяльність</p>
+  <h1>Проєкти</h1>
+
+  <div class="project-grid">
+    @for (project of projects; track project.title; let index = $index) {
+      <article class="project-card">
+        <div class="project-visual" [class.featured]="index === 0">
+          <span>{{ index + 1 }}</span>
+        </div>
+        <h2>{{ project.title }}</h2>
+        <p>{{ project.description }}</p>
+        <a href="#">Детальніше →</a>
+      </article>
+    }
+  </div>
+</main>

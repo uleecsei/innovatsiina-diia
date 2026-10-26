@@ -1,0 +1,14 @@
+<main class="page section-wide">
+  <p class="eyebrow">Прозорість</p>
+  <h1>Звітність</h1>
+
+  <div class="report-grid">
+    @for (year of years; track year) {
+      <a class="report-card" href="#">
+        <span>PDF</span>
+        <h2>Звіт {{ year }}</h2>
+        <p>Переглянути документ →</p>
+      </a>
+    }
+  </div>
+</main>
