@@ -10,7 +10,12 @@
     "lint": "ng lint",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:innovatsiina-diia": "node dist/innovatsiina-diia/server/server.mjs"
+    "serve:ssr:innovatsiina-diia": "node dist/innovatsiina-diia/server/server.mjs",
+    "backend:dev": "pnpm --filter @innovatsiina-diia/backend dev",
+    "backend:build": "pnpm --filter @innovatsiina-diia/backend build",
+    "backend:start": "pnpm --filter @innovatsiina-diia/backend start",
+    "backend:seed": "pnpm --filter @innovatsiina-diia/backend seed",
+    "backend:test": "pnpm --filter @innovatsiina-diia/backend test"
   },
   "private": true,
   "packageManager": "pnpm@11.19.0",

@@ -51,16 +51,15 @@ nav a.active {
   border-top: 1px solid #e2ded7;
   color: #68645f;
   display: flex;
-  gap: 24px;
+  flex-direction: column;
+  gap: 8px;
   justify-content: center;
+  text-align: center;
   min-height: 130px;
   padding: 32px 5vw;
 }
-.site-footer img {
-  width: 150px;
-}
-.site-footer p:last-child {
-  margin-left: auto;
+.site-footer p {
+  margin: 0;
 }
 @media (max-width: 760px) {
   .site-header {
@@ -91,16 +90,5 @@ nav a.active {
   nav a {
     border-bottom: 1px solid #eee;
     padding: 14px 4px;
-  }
-  .site-footer {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .site-footer p {
-    margin: 0;
-  }
-  .site-footer p:last-child {
-    margin-left: 0;
   }
 }
