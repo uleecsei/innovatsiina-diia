@@ -2,13 +2,22 @@
   <p class="eyebrow">Прозорість</p>
   <h1>Звітність</h1>
 
-  <div class="report-grid">
-    @for (year of years; track year) {
-      <a class="report-card" href="#">
-        <span>PDF</span>
-        <h2>Звіт {{ year }}</h2>
-        <p>Переглянути документ →</p>
-      </a>
-    }
-  </div>
+  @let state = content();
+  @if (state.status === 'loading') {
+    <p role="status">Завантаження…</p>
+  } @else if (state.status === 'error') {
+    <p role="alert">Не вдалося завантажити дані. Спробуйте оновити сторінку.</p>
+  } @else if (state.status === 'ready') {
+    <div class="report-grid">
+      @for (report of state.items; track report.id) {
+        <a class="report-card" [href]="report.pdfUrl" download>
+          <span>PDF</span>
+          <h2>Звіт {{ report.year }}</h2>
+          <p>Завантажити документ →</p>
+        </a>
+      } @empty {
+        <p>Поки що немає опублікованих записів.</p>
+      }
+    </div>
+  }
 </main>

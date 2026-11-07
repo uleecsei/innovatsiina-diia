@@ -2,16 +2,28 @@
   <p class="eyebrow">Наша діяльність</p>
   <h1>Проєкти</h1>
 
-  <div class="project-grid">
-    @for (project of projects; track project.title; let index = $index) {
-      <article class="project-card">
-        <div class="project-visual" [class.featured]="index === 0">
-          <span>{{ index + 1 }}</span>
-        </div>
-        <h2>{{ project.title }}</h2>
-        <p>{{ project.description }}</p>
-        <a href="#">Детальніше →</a>
-      </article>
-    }
-  </div>
+  @let state = content();
+  @if (state.status === 'loading') {
+    <p role="status">Завантаження…</p>
+  } @else if (state.status === 'error') {
+    <p role="alert">Не вдалося завантажити дані. Спробуйте оновити сторінку.</p>
+  } @else if (state.status === 'ready') {
+    <div class="project-grid">
+      @for (project of state.items; track project.id; let index = $index) {
+        <article class="project-card">
+          <div class="project-visual" [class.featured]="index === 0 && !project.imageUrl">
+            @if (project.imageUrl; as imageUrl) {
+              <img [src]="imageUrl" alt="" loading="lazy" />
+            } @else {
+              <span>{{ index + 1 }}</span>
+            }
+          </div>
+          <h2>{{ project.title }}</h2>
+          <p>{{ project.description }}</p>
+        </article>
+      } @empty {
+        <p>Поки що немає опублікованих записів.</p>
+      }
+    </div>
+  }
 </main>

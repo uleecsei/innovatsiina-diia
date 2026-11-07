@@ -2,17 +2,30 @@
   <p class="eyebrow">Каталог фахівчинь</p>
   <h1>Послуги</h1>
 
-  <div class="service-list">
-    @for (specialist of specialists; track specialist.email) {
-      <article>
-        <div class="avatar">{{ specialist.name[0] }}</div>
-        <div>
-          <h2>{{ specialist.name }}</h2>
-          <p>{{ specialist.skill }}</p>
-        </div>
-        <a [href]="'mailto:' + specialist.email">{{ specialist.email }}</a>
-        <button class="icon-button" type="button" aria-label="Переглянути портфоліо">▤</button>
-      </article>
-    }
-  </div>
+  @let state = content();
+  @if (state.status === 'loading') {
+    <p role="status">Завантаження…</p>
+  } @else if (state.status === 'error') {
+    <p role="alert">Не вдалося завантажити дані. Спробуйте оновити сторінку.</p>
+  } @else if (state.status === 'ready') {
+    <div class="service-list">
+      @for (specialist of state.items; track specialist.id) {
+        <article>
+          <div class="avatar">{{ specialist.name[0] }}</div>
+          <div>
+            <h2>{{ specialist.name }}</h2>
+            <p>{{ specialist.skill }}</p>
+          </div>
+          <a [href]="'mailto:' + specialist.email">{{ specialist.email }}</a>
+          @if (specialist.portfolioUrl; as portfolioUrl) {
+            <a class="icon-button" [href]="portfolioUrl" download aria-label="Завантажити портфоліо"
+              >▤</a
+            >
+          }
+        </article>
+      } @empty {
+        <p>Поки що немає опублікованих записів.</p>
+      }
+    </div>
+  }
 </main>

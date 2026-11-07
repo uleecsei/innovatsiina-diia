@@ -1,3 +1,5 @@
+import { resolve } from 'node:path';
+
 export function readConfig(env: NodeJS.ProcessEnv = process.env) {
   const port = Number(env['PORT'] ?? 3000);
   const mongoUri = env['MONGODB_URI'];
@@ -9,5 +11,10 @@ export function readConfig(env: NodeJS.ProcessEnv = process.env) {
     throw new Error('Set MONGODB_URI in backend/.env to a MongoDB connection string');
   }
   if (!database.trim()) throw new Error('MONGODB_DB cannot be empty');
-  return { port, mongoUri, database };
+  const projectImagesDir = resolve(env['PROJECT_IMAGES_DIR'] ?? 'uploads/projects');
+  const specialistPortfoliosDir = resolve(
+    env['SPECIALIST_PORTFOLIOS_DIR'] ?? 'uploads/specialists',
+  );
+  const reportsDir = resolve(env['REPORTS_DIR'] ?? 'uploads/reports');
+  return { port, mongoUri, database, projectImagesDir, specialistPortfoliosDir, reportsDir };
 }

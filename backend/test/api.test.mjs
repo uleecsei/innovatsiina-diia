@@ -17,6 +17,9 @@ const project = { id: 'abc', title: 'Проєкт', description: 'Опис' };
 const specialist = { id: 'def', name: 'Ім’я', skill: 'Тренерка', email: 'test@example.com' };
 const repository = {
   async ping() {},
+  async reports() {
+    return [{ id: 'ghi', year: 2025, pdfUrl: '/media/reports/2025.pdf' }];
+  },
   async projects() {
     return [project];
   },
@@ -29,6 +32,7 @@ test('public endpoints return repository data and health', async () => {
   await withServer(repository, async (base) => {
     for (const [path, expected] of [
       ['/api/projects', [project]],
+      ['/api/reports', await repository.reports()],
       ['/api/specialists', [specialist]],
       ['/api/health', { status: 'ok' }],
     ]) {
