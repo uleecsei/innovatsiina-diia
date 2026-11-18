@@ -15,7 +15,8 @@
     "backend:build": "pnpm --filter @innovatsiina-diia/backend build",
     "backend:start": "pnpm --filter @innovatsiina-diia/backend start",
     "backend:seed": "pnpm --filter @innovatsiina-diia/backend seed",
-    "backend:test": "pnpm --filter @innovatsiina-diia/backend test"
+    "backend:test": "pnpm --filter @innovatsiina-diia/backend test",
+    "admin:setup": "pnpm --filter @innovatsiina-diia/backend admin:setup"
   },
   "private": true,
   "packageManager": "pnpm@11.19.0",

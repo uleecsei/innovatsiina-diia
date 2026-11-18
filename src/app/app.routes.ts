@@ -29,5 +29,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/reports/reports.page').then(({ ReportsPage }) => ReportsPage),
   },
+  {
+    path: 'admin',
+    title: 'Адміністрування | Інноваційна дія',
+    loadComponent: () => import('./features/admin/admin.page').then((m) => m.AdminPage),
+  },
   { path: '**', redirectTo: '' },
 ];

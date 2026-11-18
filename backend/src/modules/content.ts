@@ -12,6 +12,7 @@ export interface Specialist {
   skill: string;
   email: string;
   portfolioUrl?: string;
+  imageUrl?: string;
   sortOrder: number;
 }
 
@@ -53,7 +54,7 @@ export function createContentRepository(db: Db): ContentRepository {
     async specialists() {
       const items = await db
         .collection<Specialist>('specialists')
-        .find({}, { projection: { name: 1, skill: 1, email: 1, portfolioUrl: 1 } })
+        .find({}, { projection: { name: 1, skill: 1, email: 1, portfolioUrl: 1, imageUrl: 1 } })
         .sort({ sortOrder: 1, _id: 1 })
         .limit(200)
         .toArray();

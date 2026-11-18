@@ -11,6 +11,42 @@
     <div class="report-grid">
       @for (report of state.items; track report.id) {
         <a class="report-card" [href]="report.pdfUrl" download>
+          <div class="report-visual" aria-hidden="true">
+            <svg class="pdf-icon" viewBox="0 0 80 96" fill="none">
+              <path
+                d="M15 4h32l18 18v66a4 4 0 0 1-4 4H15a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4Z"
+                fill="white"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M47 4v18h18"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M23 36h30M23 44h22"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                opacity=".35"
+              />
+              <rect x="3" y="54" width="70" height="28" rx="4" fill="currentColor" />
+              <text
+                x="38"
+                y="74"
+                fill="white"
+                text-anchor="middle"
+                font-size="18"
+                font-weight="700"
+                font-family="Arial, sans-serif"
+              >
+                PDF
+              </text>
+            </svg>
+          </div>
           <span>PDF</span>
           <h2>Звіт {{ report.year }}</h2>
           <p>Завантажити документ →</p>

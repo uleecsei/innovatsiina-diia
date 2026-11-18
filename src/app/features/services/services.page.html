@@ -10,17 +10,31 @@
   } @else if (state.status === 'ready') {
     <div class="service-list">
       @for (specialist of state.items; track specialist.id) {
-        <article>
-          <div class="avatar">{{ specialist.name[0] }}</div>
-          <div>
-            <h2>{{ specialist.name }}</h2>
-            <p>{{ specialist.skill }}</p>
+        <article class="specialist-card">
+          <div class="avatar">
+            @if (specialist.imageUrl) {
+              <img [src]="specialist.imageUrl" [alt]="specialist.name" loading="lazy" />
+            } @else {
+              <svg viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
+                <circle cx="50" cy="35" r="19" />
+                <path d="M16 94v-9a34 34 0 0 1 68 0v9Z" />
+              </svg>
+            }
           </div>
-          <a [href]="'mailto:' + specialist.email">{{ specialist.email }}</a>
+          <h2>
+            <a [href]="'mailto:' + specialist.email">{{ specialist.name }}</a>
+          </h2>
+          <p class="skill">{{ specialist.skill }}</p>
           @if (specialist.portfolioUrl; as portfolioUrl) {
-            <a class="icon-button" [href]="portfolioUrl" download aria-label="Завантажити портфоліо"
-              >▤</a
+            <a
+              class="portfolio-button"
+              [href]="portfolioUrl"
+              download
+              [attr.aria-label]="'Завантажити портфоліо: ' + specialist.name"
+              >портфоліо</a
             >
+          } @else {
+            <span class="portfolio-unavailable">Портфоліо незабаром</span>
           }
         </article>
       } @empty {

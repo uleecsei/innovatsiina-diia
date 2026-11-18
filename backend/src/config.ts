@@ -16,5 +16,36 @@ export function readConfig(env: NodeJS.ProcessEnv = process.env) {
     env['SPECIALIST_PORTFOLIOS_DIR'] ?? 'uploads/specialists',
   );
   const reportsDir = resolve(env['REPORTS_DIR'] ?? 'uploads/reports');
-  return { port, mongoUri, database, projectImagesDir, specialistPortfoliosDir, reportsDir };
+  const secureCookies = env['NODE_ENV'] === 'production';
+  const adminOrigins = (
+    env['ADMIN_ORIGINS'] ?? (secureCookies ? '' : 'http://localhost:4200,http://127.0.0.1:4200')
+  )
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (
+    !adminOrigins.length ||
+    adminOrigins.some((origin) => {
+      try {
+        const url = new URL(origin);
+        return (
+          url.origin !== origin ||
+          (secureCookies ? url.protocol !== 'https:' : !['http:', 'https:'].includes(url.protocol))
+        );
+      } catch {
+        return true;
+      }
+    })
+  )
+    throw new Error('Set ADMIN_ORIGINS to exact allowed origins (HTTPS in production)');
+  return {
+    adminOrigins,
+    secureCookies,
+    port,
+    mongoUri,
+    database,
+    projectImagesDir,
+    specialistPortfoliosDir,
+    reportsDir,
+  };
 }

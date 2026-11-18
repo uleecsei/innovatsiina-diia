@@ -1,5 +1,5 @@
 import express from 'express';
-import { extname } from 'node:path';
+import { extname, join } from 'node:path';
 import type { ContentRepository } from './modules/content.ts';
 
 interface MediaDirectories {
@@ -30,9 +30,14 @@ function serveMedia(directory: string, extensions: string[], download = false) {
   return middleware;
 }
 
-export function createApp(repository: ContentRepository, media: MediaDirectories = {}) {
+export function createApp(
+  repository: ContentRepository,
+  media: MediaDirectories = {},
+  adminRouter?: express.Router,
+) {
   const app = express();
   app.disable('x-powered-by');
+  if (adminRouter) app.use('/api/admin', adminRouter);
 
   if (media.projectImagesDir) {
     app.use(
@@ -41,6 +46,10 @@ export function createApp(repository: ContentRepository, media: MediaDirectories
     );
   }
   if (media.specialistPortfoliosDir) {
+    app.use(
+      '/media/specialists/photos',
+      serveMedia(join(media.specialistPortfoliosDir, 'photos'), ['.webp']),
+    );
     app.use(
       '/media/specialists',
       serveMedia(

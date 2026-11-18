@@ -8,13 +8,19 @@
   text-decoration: none;
 }
 
-.report-card::before {
+.report-visual {
   background: #e9e9e4;
   border: 2px solid #bd5264;
   border-radius: 4px;
-  content: '';
-  display: block;
-  padding-top: 72%;
+  aspect-ratio: 100 / 72;
+  display: grid;
+  place-items: center;
+}
+
+.pdf-icon {
+  color: var(--wine);
+  width: clamp(60px, 7vw, 88px);
+  height: auto;
 }
 
 .report-card span {

@@ -1,0 +1,259 @@
+<main class="admin">
+  <div class="heading">
+    <div>
+      <h1>Керування сайтом</h1>
+    </div>
+    @if (session(); as user) {
+      <div class="account">
+        <span>{{ user.username }}</span
+        ><button type="button" [disabled]="busy()" (click)="logout()">Вийти</button>
+      </div>
+    }
+  </div>
+  @if (error()) {
+    <p class="message error" role="alert">{{ error() }}</p>
+  }
+  @if (notice()) {
+    <p class="message success" role="status">{{ notice() }}</p>
+  }
+  @if (checking()) {
+    <p role="status">Перевіряємо вхід…</p>
+  } @else if (!session()) {
+    <form class="panel login" #loginForm="ngForm" (ngSubmit)="login()">
+      <h2>Вхід адміністратора</h2>
+      <label for="username">Логін</label>
+      <input
+        id="username"
+        name="username"
+        [(ngModel)]="username"
+        required
+        maxlength="64"
+        autocomplete="username"
+        [disabled]="busy()"
+      />
+      <label for="password">Пароль</label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        [(ngModel)]="password"
+        required
+        maxlength="128"
+        autocomplete="current-password"
+        [disabled]="busy()"
+      />
+      <button class="primary" type="submit" [disabled]="busy() || loginForm.invalid">
+        {{ busy() ? 'Входимо…' : 'Увійти' }}
+      </button>
+    </form>
+  } @else {
+    <nav class="sections" aria-label="Розділи керування">
+      @for (tab of sections; track tab.id) {
+        <button
+          type="button"
+          [class.selected]="section() === tab.id"
+          [attr.aria-pressed]="section() === tab.id"
+          [disabled]="busy() || loadingEntries()"
+          (click)="switchSection(tab.id)"
+        >
+          {{ tab.label }}
+        </button>
+      }
+    </nav>
+    @for (activeSection of [{ id: section() }]; track activeSection.id) {
+      <div class="columns">
+        <form class="panel" #projectForm="ngForm" (ngSubmit)="save(photo)">
+          <h2>{{ editingId() ? 'Редагування запису' : 'Новий запис' }}</h2>
+          <p class="hint">Збережені зміни одразу відображаються на сайті.</p>
+          <fieldset [disabled]="busy()">
+            @if (section() === 'projects') {
+              <label for="title">Назва</label>
+              <input id="title" name="title" [(ngModel)]="title" required maxlength="160" />
+              <label for="description">Опис</label>
+              <textarea
+                id="description"
+                name="description"
+                [(ngModel)]="description"
+                required
+                maxlength="5000"
+                rows="7"
+              ></textarea>
+            } @else if (section() === 'specialists') {
+              <label for="name">Ім’я фахівчині / фахівця</label>
+              <input id="name" name="name" [(ngModel)]="name" required maxlength="160" />
+              <label for="skill">Опис послуг</label>
+              <textarea
+                id="skill"
+                name="skill"
+                [(ngModel)]="skill"
+                required
+                maxlength="5000"
+                rows="7"
+              ></textarea>
+              <label for="email">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                [(ngModel)]="email"
+                required
+                email
+                maxlength="254"
+              />
+              <label for="portrait">Фото фахівчині / фахівця (необов’язково)</label>
+              <input
+                #portraitInput
+                id="portrait"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/avif"
+                (change)="selectImage($event, true)"
+                aria-describedby="portrait-help"
+              />
+              <p id="portrait-help" class="hint">
+                JPG, PNG, WebP або AVIF до 5 МБ. На сайті фото відображається у круглому кадрі.
+              </p>
+              @if (preview()) {
+                <img
+                  class="portrait-preview"
+                  [src]="preview()"
+                  alt="Попередній перегляд фото фахівця"
+                />
+                <button type="button" (click)="removePortrait(portraitInput)">Прибрати фото</button>
+              }
+            } @else {
+              <label for="year">Рік звіту</label>
+              <input
+                id="year"
+                name="year"
+                type="number"
+                [(ngModel)]="year"
+                required
+                min="1900"
+                max="2100"
+                step="1"
+              />
+            }
+            <label for="photo">{{
+              section() === 'projects'
+                ? 'Фото (необов’язково)'
+                : section() === 'specialists'
+                  ? 'Портфоліо PDF (необов’язково)'
+                  : 'PDF звіту (обов’язково)'
+            }}</label>
+            <input
+              #photo
+              id="photo"
+              type="file"
+              [accept]="
+                section() === 'projects'
+                  ? 'image/jpeg,image/png,image/webp,image/avif'
+                  : '.pdf,application/pdf'
+              "
+              aria-describedby="photo-help"
+              (change)="selectImage($event)"
+            />
+            <p id="photo-help" class="hint">
+              {{
+                section() === 'projects'
+                  ? 'JPG, PNG, WebP або AVIF, до 5 МБ і 25 мегапікселів.'
+                  : 'PDF до 10 МБ. Документ буде доступний усім відвідувачам сайту.'
+              }}
+            </p>
+            @if (section() === 'projects' && preview()) {
+              <img class="preview" [src]="preview()" alt="Попередній перегляд фото" />
+              <button type="button" (click)="removeImage(photo)">Прибрати фото</button>
+            }
+            @if (section() !== 'projects') {
+              @if (selectedFilename()) {
+                <p role="status">Обрано: {{ selectedFilename() }}</p>
+              } @else if (attachment()) {
+                <p><a [href]="attachment()" download>Завантажити поточний документ</a></p>
+              }
+              @if (section() === 'specialists' && (attachment() || selectedFilename())) {
+                <button type="button" (click)="removeImage(photo)">Прибрати портфоліо</button>
+              }
+            }
+            <button
+              class="primary"
+              type="submit"
+              [disabled]="
+                busy() ||
+                projectForm.invalid ||
+                (section() === 'reports' && !attachment() && !selectedFilename())
+              "
+            >
+              {{ busy() ? 'Зачекайте…' : editingId() ? 'Зберегти зміни' : 'Опублікувати' }}
+            </button>
+            @if (editingId()) {
+              <button type="button" (click)="resetForm(photo)">Скасувати редагування</button>
+            }
+          </fieldset>
+        </form>
+        <section class="panel" aria-labelledby="published-title">
+          <div class="list-heading">
+            <h2 id="published-title">Опубліковані</h2>
+            <button type="button" (click)="loadEntries()" [disabled]="loadingEntries() || busy()">
+              Оновити
+            </button>
+          </div>
+          @if (loadingEntries()) {
+            <p role="status">Завантаження…</p>
+          } @else {
+            @for (project of entries(); track project.id) {
+              <article>
+                @if (project.imageUrl) {
+                  <img [src]="project.imageUrl" alt="" loading="lazy" />
+                }
+                <div>
+                  <h3>{{ label(project) }}</h3>
+                  <p>{{ project.description ?? project.skill }}</p>
+                  @if (project.email) {
+                    <p>{{ project.email }}</p>
+                  }
+                  @if (project.portfolioUrl || project.pdfUrl) {
+                    <a [href]="project.portfolioUrl || project.pdfUrl" download
+                      >Завантажити документ</a
+                    >
+                  }
+                  <div class="actions">
+                    <button type="button" [disabled]="busy()" (click)="edit(project, photo)">
+                      Редагувати
+                    </button>
+                    <button
+                      class="danger"
+                      type="button"
+                      [disabled]="busy()"
+                      (click)="deleting.set(project)"
+                    >
+                      Видалити
+                    </button>
+                  </div>
+                  @if (deleting()?.id === project.id) {
+                    <div class="delete-confirm" role="group" aria-label="Підтвердження видалення">
+                      <p>Видалити «{{ label(project) }}»? Цю дію не можна скасувати.</p>
+                      <div class="actions">
+                        <button
+                          class="danger"
+                          type="button"
+                          [disabled]="busy()"
+                          (click)="deleteEntry(photo)"
+                        >
+                          Так, видалити
+                        </button>
+                        <button type="button" [disabled]="busy()" (click)="deleting.set(null)">
+                          Скасувати
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </article>
+            } @empty {
+              <p class="hint">Записів поки немає. Додайте перший.</p>
+            }
+          }
+        </section>
+      </div>
+    }
+  }
+</main>

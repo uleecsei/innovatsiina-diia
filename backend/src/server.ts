@@ -1,3 +1,5 @@
+import { createAdminRouter } from './admin.ts';
+import { join } from 'node:path';
 import { mkdir } from 'node:fs/promises';
 import { MongoClient } from 'mongodb';
 import { createApp } from './app.ts';
@@ -9,6 +11,7 @@ await Promise.all([
   mkdir(config.reportsDir, { recursive: true }),
   mkdir(config.projectImagesDir, { recursive: true }),
   mkdir(config.specialistPortfoliosDir, { recursive: true }),
+  mkdir(join(config.specialistPortfoliosDir, 'photos'), { recursive: true }),
 ]);
 const client = new MongoClient(config.mongoUri, { serverSelectionTimeoutMS: 5000 });
 try {
@@ -19,10 +22,18 @@ try {
   await client.close();
   process.exit(1);
 }
-const server = createApp(createContentRepository(client.db(config.database)), config).listen(
-  config.port,
-  () => console.log(`API listening on port ${config.port}`),
+const adminRouter = await createAdminRouter(
+  client.db(config.database),
+  config.projectImagesDir,
+  config.adminOrigins,
+  config.secureCookies,
+  config,
 );
+const server = createApp(
+  createContentRepository(client.db(config.database)),
+  config,
+  adminRouter,
+).listen(config.port, () => console.log(`API listening on port ${config.port}`));
 server.on('error', async () => {
   console.error('Cannot start API listener');
   await client.close();

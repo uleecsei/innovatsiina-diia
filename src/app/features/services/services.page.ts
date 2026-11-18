@@ -7,6 +7,7 @@ interface Specialist {
   readonly skill: string;
   readonly email: string;
   readonly portfolioUrl?: string;
+  readonly imageUrl?: string;
 }
 
 @Component({
