@@ -9,9 +9,17 @@ After a production build, start the site with
 Do not open `dist/.../index.html` directly as a local file. In production, set
 `NG_ALLOWED_HOSTS=example.com,www.example.com` to the real domain names.
 
-Planned architecture: prerendered/SSR public pages, a lazy-loaded admin area,
-a small API in the existing Node.js/Express SSR server, and SQLite or PostgreSQL
-for content. A separate NestJS service is intentionally deferred until needed.
+The Angular SSR server renders public pages with data from the separate
+[Express and MongoDB backend](backend/README.md). Configure production with:
+
+- `SITE_ORIGIN=https://your-domain.example` for canonical URLs, link previews and
+  `/sitemap.xml`. Use the final public HTTPS domain without a path.
+- `API_ORIGIN=http://127.0.0.1:3000` for the SSR server's internal API requests.
+  This is the default. Set it to the backend service address when running in containers.
+- Route browser requests to `/api/` and `/media/` to the backend on the same
+  public domain. Send public pages, `/robots.txt` and `/sitemap.xml` to the SSR server.
+- Redirect alternate hosts and HTTP to the canonical HTTPS origin at the reverse proxy.
+  Verify the domain in Google Search Console and submit `/sitemap.xml` after deployment.
 
 ## Development server
 

@@ -6,6 +6,8 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import { publicPaths } from './app/app.routes.server';
+import type { SiteRequestContext } from './app/seo';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 const allowedHosts = (process.env['NG_ALLOWED_HOSTS'] ?? 'localhost,127.0.0.1')
@@ -16,17 +18,44 @@ const allowedHosts = (process.env['NG_ALLOWED_HOSTS'] ?? 'localhost,127.0.0.1')
 const app = express();
 const angularApp = new AngularNodeAppEngine({ allowedHosts });
 
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
+function readOrigin(value: string, variable: string): string {
+  const url = new URL(value);
+  if (
+    !['http:', 'https:'].includes(url.protocol) ||
+    ![url.origin, url.origin + '/'].includes(value)
+  ) {
+    throw new Error(`${variable} must be an HTTP(S) origin without a path.`);
+  }
+  return url.origin;
+}
+
+const configuredOrigin = process.env['SITE_ORIGIN'];
+const siteOrigin = configuredOrigin ? readOrigin(configuredOrigin, 'SITE_ORIGIN') : undefined;
+const apiOrigin = readOrigin(process.env['API_ORIGIN'] ?? 'http://127.0.0.1:3000', 'API_ORIGIN');
+const requestContext: SiteRequestContext = { siteOrigin, apiOrigin };
+
+app.get('/robots.txt', (_req, res) => {
+  const sitemap = siteOrigin ? `Sitemap: ${siteOrigin}/sitemap.xml\n` : '';
+  res.type('text/plain').send(`User-agent: *\nDisallow: /api/\n${sitemap}`);
+});
+
+app.get('/sitemap.xml', (_req, res) => {
+  if (!siteOrigin) {
+    res.sendStatus(404);
+    return;
+  }
+  const entries = publicPaths.map((path) => `  <url><loc>${siteOrigin}/${path}</loc></url>`);
+  res
+    .type('application/xml')
+    .send(
+      [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        ...entries,
+        '</urlset>',
+      ].join('\n'),
+    );
+});
 
 /**
  * Serve static files from /browser
@@ -44,7 +73,7 @@ app.use(
  */
 app.use((req, res, next) => {
   angularApp
-    .handle(req)
+    .handle(req, requestContext)
     .then((response) => (response ? writeResponseToNodeResponse(response, res) : next()))
     .catch(next);
 });
