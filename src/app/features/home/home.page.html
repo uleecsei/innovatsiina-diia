@@ -4,8 +4,7 @@
       <p class="kicker">Громадська організація</p>
       <h1>ІННОВАЦІЙНА<br />ДІЯ</h1>
       <p class="lead">
-        Допомагаємо жінкам розкривати свій потенціал і силу, створюючи середовище, де вони можуть
-        підтримувати одна одну та змінювати громади на краще
+        Розкривати потенціал жінок, зокрема тих, які постраждали від війни та вимушеного переміщення, створювати можливості для їхньої економічної незалежності, самореалізації та лідерства, об’єднуючи у сильні спільноти, здатні змінювати власне життя та майбутнє своїх громад.
       </p>
       <a class="button" routerLink="/about">Дізнатися більше</a>
     </div>
@@ -208,11 +207,55 @@
         </a>
       </div>
     </div>
-    <form>
-      <label>Ім’я<input type="text" /></label>
-      <label>Email<input type="email" /></label>
-      <label class="full">Повідомлення<textarea rows="4"></textarea></label>
-      <button class="button" type="button">Надіслати</button>
+    <form #contactForm (submit)="submitContact($event, contactForm)">
+      <label>
+        Ім’я<input
+          name="name"
+          type="text"
+          autocomplete="name"
+          required
+          maxlength="100"
+          [readOnly]="contactStatus() === 'sending'"
+        />
+      </label>
+      <label>
+        Email<input
+          name="email"
+          type="email"
+          autocomplete="email"
+          required
+          maxlength="254"
+          [readOnly]="contactStatus() === 'sending'"
+        />
+      </label>
+      <label class="full">
+        Повідомлення<textarea
+          name="message"
+          rows="4"
+          required
+          maxlength="3000"
+          [readOnly]="contactStatus() === 'sending'"
+        ></textarea>
+      </label>
+      <button class="button" type="submit" [disabled]="contactStatus() === 'sending'">
+        {{ contactStatus() === 'sending' ? 'Надсилаємо…' : 'Надіслати' }}
+      </button>
+      <div class="full" role="status">
+        @switch (contactStatus()) {
+          @case ('sent') {
+            Повідомлення надіслано. Дякуємо!
+          }
+          @case ('invalid') {
+            Перевірте ім’я, email і текст повідомлення.
+          }
+          @case ('limited') {
+            Забагато повідомлень. Спробуйте трохи пізніше.
+          }
+          @case ('error') {
+            Не вдалося надіслати повідомлення. Спробуйте пізніше або напишіть нам на email.
+          }
+        }
+      </div>
     </form>
   </section>
 </main>

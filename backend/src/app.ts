@@ -34,10 +34,12 @@ export function createApp(
   repository: ContentRepository,
   media: MediaDirectories = {},
   adminRouter?: express.Router,
+  contactRouter?: express.Router,
 ) {
   const app = express();
   app.disable('x-powered-by');
   if (adminRouter) app.use('/api/admin', adminRouter);
+  if (contactRouter) app.use('/api/contact', contactRouter);
 
   if (media.projectImagesDir) {
     app.use(

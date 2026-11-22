@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { mkdir } from 'node:fs/promises';
 import { MongoClient } from 'mongodb';
 import { createApp } from './app.ts';
+import { createContactRouter, createContactSender } from './contact.ts';
 import { readConfig } from './config.ts';
 import { createContentRepository } from './modules/content.ts';
 
@@ -33,6 +34,7 @@ const server = createApp(
   createContentRepository(client.db(config.database)),
   config,
   adminRouter,
+  createContactRouter(config.adminOrigins, createContactSender()),
 ).listen(config.port, () => console.log(`API listening on port ${config.port}`));
 server.on('error', async () => {
   console.error('Cannot start API listener');
