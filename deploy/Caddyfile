@@ -1,0 +1,24 @@
+{$SITE_HOST} {
+	encode zstd gzip
+	header X-Robots-Tag "noindex, nofollow, noarchive"
+	request_body {
+		max_size 22MB
+	}
+	handle /robots.txt {
+		respond <<ROBOTS
+			User-agent: *
+			Disallow: /
+			ROBOTS 200
+	}
+	@backend path /api /api/* /media /media/*
+	handle @backend {
+		reverse_proxy api:3000
+	}
+	handle {
+		reverse_proxy web:4000 {
+			# The app uses SITE_ORIGIN and does not need proxy headers.
+			# Angular falls back to client rendering for untrusted forwarded headers.
+			header_up -X-Forwarded-*
+		}
+	}
+}

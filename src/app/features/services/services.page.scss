@@ -15,13 +15,11 @@
 }
 .avatar {
   width: 116px;
-  aspect-ratio: 1;
+  height: 116px;
   flex-shrink: 0;
   border: 2px solid #407b76;
   border-radius: 50%;
   padding: 5px;
-  display: grid;
-  place-items: center;
   overflow: hidden;
   margin-bottom: 18px;
   color: #8b8f8d;

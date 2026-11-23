@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import { createApp } from '../dist/app.js';
 import { readConfig } from '../dist/config.js';
 
-async function withServer(repository, run) {
-  const server = createApp(repository).listen(0, '127.0.0.1');
+async function withServer(repository, run, media = {}) {
+  const server = createApp(repository, media).listen(0, '127.0.0.1');
   await once(server, 'listening');
   try {
     await run(`http://127.0.0.1:${server.address().port}`);
@@ -27,6 +30,34 @@ const repository = {
     return [specialist];
   },
 };
+
+test('reports and PDF portfolios open inline while other portfolio files download', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'media-preview-'));
+  try {
+    await writeFile(join(directory, 'document.pdf'), '%PDF-1.7\n');
+    await writeFile(join(directory, 'portfolio.zip'), 'archive');
+    await withServer(
+      repository,
+      async (base) => {
+        for (const path of ['/media/reports/document.pdf', '/media/specialists/document.pdf']) {
+          const response = await fetch(base + path);
+          assert.equal(response.status, 200);
+          assert.equal(response.headers.get('content-type'), 'application/pdf');
+          assert.equal(response.headers.get('content-disposition'), 'inline');
+          assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
+          assert.equal(await response.text(), '%PDF-1.7\n');
+        }
+        const archive = await fetch(base + '/media/specialists/portfolio.zip');
+        assert.equal(archive.status, 200);
+        assert.equal(archive.headers.get('content-disposition'), 'attachment');
+        await archive.arrayBuffer();
+      },
+      { reportsDir: directory, specialistPortfoliosDir: directory },
+    );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
 
 test('public endpoints return repository data and health', async () => {
   await withServer(repository, async (base) => {

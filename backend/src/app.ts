@@ -14,9 +14,14 @@ function serveMedia(directory: string, extensions: string[], download = false) {
     index: false,
     redirect: false,
     dotfiles: 'ignore',
-    setHeaders(res) {
+    setHeaders(res, filePath) {
       res.setHeader('X-Content-Type-Options', 'nosniff');
-      if (download) res.setHeader('Content-Disposition', 'attachment');
+      if (download) {
+        res.setHeader(
+          'Content-Disposition',
+          extname(filePath).toLowerCase() === '.pdf' ? 'inline' : 'attachment',
+        );
+      }
     },
   });
 

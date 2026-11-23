@@ -254,7 +254,8 @@ test(
         assert.equal((await (await fetch(base + url, { headers: auth })).json()).length, 1);
         const download = await fetch(base + item[fileField]);
         assert.equal(download.status, 200);
-        assert.match(download.headers.get('content-disposition'), /attachment/);
+        assert.equal(download.headers.get('content-disposition'), 'inline');
+        assert.equal(download.headers.get('content-type'), 'application/pdf');
         for (const method of ['PUT', 'DELETE']) {
           assert.equal((await request(itemUrl, fields, {}, method)).status, 401);
           assert.equal((await request(itemUrl, fields, { Cookie: cookie }, method)).status, 403);

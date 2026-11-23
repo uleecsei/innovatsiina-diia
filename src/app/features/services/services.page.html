@@ -29,8 +29,9 @@
             <a
               class="portfolio-button"
               [href]="portfolioUrl"
-              download
-              [attr.aria-label]="'Завантажити портфоліо: ' + specialist.name"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="'Відкрити портфоліо в новій вкладці: ' + specialist.name"
               >портфоліо</a
             >
           } @else {

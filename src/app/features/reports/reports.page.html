@@ -10,7 +10,13 @@
   } @else if (state.status === 'ready') {
     <div class="report-grid">
       @for (report of state.items; track report.id) {
-        <a class="report-card" [href]="report.pdfUrl" download>
+        <a
+          class="report-card"
+          [href]="report.pdfUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          [attr.aria-label]="'Відкрити звіт за ' + report.year + ' рік у новій вкладці'"
+        >
           <div class="report-visual" aria-hidden="true">
             <svg class="pdf-icon" viewBox="0 0 80 96" fill="none">
               <path
@@ -49,7 +55,7 @@
           </div>
           <span>PDF</span>
           <h2>Звіт {{ report.year }}</h2>
-          <p>Завантажити документ →</p>
+          <p>Відкрити документ ↗</p>
         </a>
       } @empty {
         <p>Поки що немає опублікованих записів.</p>
